@@ -1,9 +1,9 @@
 # Lea-Server
-[![Deploy](https://github.com/Lea-Voc/Lea-Server/actions/workflows/deploy.yml/badge.svg)](https://github.com/Lea-Voc/Lea-Server/actions/workflows/deploy.yml)
+<!-- [![Deploy](https://github.com/Lea-Voc/Lea-Server/actions/workflows/deploy.yml/badge.svg)](https://github.com/Lea-Voc/Lea-Server/actions/workflows/deploy.yml) -->
 
 Contains all configuration files for the servers. Used by Lea-Back, Lea-Website and Lea-Web-App
 
-All Lea services running on the server are runned in a Docker container. All Docker containers are runned through a [docker-compose cofiguration](https://github.com/Lea-Voc/Lea-Server/blob/main/docker-compose.yml).
+All Lea services running on the server are runned in a Docker container. All Docker containers are runned through a [docker-compose cofiguration](https://github.com/Pandatec/Lea-Assistant_Server/blob/main/docker-compose.yml).
 
 ## How to restarts all the container
 
@@ -19,8 +19,8 @@ This Node.js process is the production server used for the HTTP API and the webs
 * Container name: lea_api_prod
 * Directory: /home/CI/Lea-Back-Prod/
 * Restart file: /home/CI/Lea-Server/deployApiProd.sh
-* Base repository: [Lea-Back](https://github.com/Lea-Voc/Lea-Back) 'main' branch
-* URL: [https://api.leassistant.fr](api.leassistant.fr)
+* Base repository: [Lea-Back](https://github.com/Pandatec/Lea-Assistant_BackEnd) 'main' branch
+<!-- * URL: [https://api.leassistant.fr](api.leassistant.fr) -->
 
 ### API and WS development server
 This Node.js process is the development server used for the HTTP API and the websocket server. It runs on the development database and should be the one used for ALL development purpose.
@@ -28,9 +28,9 @@ This Node.js process is the development server used for the HTTP API and the web
 * Container name: lea_api_dev
 * Directory: /home/CI/Lea-Back-Dev/
 * Restart file: /home/CI/Lea-Server/deployApiDev.sh
-* Base repository: [Lea-Back](https://github.com/Lea-Voc/Lea-Back) 'stagging' branch
+* Base repository: [Lea-Back](https://github.com/Lea-Voc/Pandatec/Lea-Assistant_BackEnd) 'stagging' branch
 * Depends on: [Development database](#development-database)
-* URL: [https://dev.api.leassistant.fr](dev.api.leassistant.fr)
+<!-- * URL: [https://dev.api.leassistant.fr](dev.api.leassistant.fr) -->
 
 ### Web app production version
 This Node.js process is the production version used for the web application. It makes request to the [API and WS production server](#api-and-ws-production-server)
@@ -38,8 +38,8 @@ This Node.js process is the production version used for the web application. It 
 * Container name: lea_app_prod
 * Directory: /home/CI/Lea-Web-App-Prod/
 * Restart file: /home/CI/Lea-Server/deployAppProd.sh
-* Base repository: [Lea-Web-App](https://github.com/Lea-Voc/Lea-Web-App) 'main' branch
-* URL: [https://app.leassistant.fr](app.leassistant.fr)
+* Base repository: [Lea-Web-App](https://github.com/Pandatec/Lea-Assistant_Web-Connect) 'main' branch
+<!-- * URL: [https://app.leassistant.fr](app.leassistant.fr) -->
 
 ### Web app develoment version
 This Node.js process is the development version used for the web application. It makes request to the [API and WS development server](#api-and-ws-development-server)
@@ -47,8 +47,8 @@ This Node.js process is the development version used for the web application. It
 * Container name: lea_app_dev
 * Directory: /home/CI/Lea-Web-App-Dev/
 * Restart file: /home/CI/Lea-Server/deployAppDev.sh
-* Base repository: [Lea-Web-App](https://github.com/Lea-Voc/Lea-Web-App) 'staging' branch
-* URL: [https://dev.app.leassistant.fr](dev.app.leassistant.fr)
+* Base repository: [Lea-Web-App](https://github.com/Pandatec/Lea-Assistant_Web-Connect) 'staging' branch
+<!-- * URL: [https://dev.app.leassistant.fr](dev.app.leassistant.fr) -->
 
 ### API Documentation
 This Swagger UI container hosts the online API documentation.
@@ -56,8 +56,8 @@ This Swagger UI container hosts the online API documentation.
 * Container name: swagger-ui
 * Directory: /home/CI/Lea-Doc/
 * Restart file: /home/CI/Lea-Server/deployDoc.sh
-* Base repository: [Lea-Doc](https://github.com/Lea-Voc/Lea-Doc) 'main' branch
-* URL: [doc.leassistant.fr](https://doc.leassistant.fr)
+<!-- * Base repository: [Lea-Doc](https://github.com/Lea-Voc/Lea-Doc) 'main' branch -->
+<!-- * URL: [doc.leassistant.fr](https://doc.leassistant.fr) -->
 
 ### HTPP Forwarder
 This Nginx process forwards all the HTTP request to their respective container. It also handles all the HTTPS setup for all the subdomains. It waits until all the other containers are started to start.
