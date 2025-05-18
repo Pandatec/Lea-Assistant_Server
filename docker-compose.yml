@@ -1,0 +1,151 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:14.2-alpine
+    container_name: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: lea
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+
+  lea_throttle:
+    image: leassistant/lea_throttle:latest
+    container_name: lea_throttle
+    build:
+      context: ../Lea-Throttle
+    expose:
+      - 7999
+    environment:
+      HTTP_PORT: 7999
+
+  lea_api_dev:
+    depends_on:
+      - postgres
+      - lea_throttle
+    image: leassistant/lea_api_dev:latest
+    container_name: lea_api_dev
+    build:
+      context: ../Lea-Back-Dev
+      dockerfile: ./Dockerfile.dev
+    expose:
+      - 80
+    ports:
+      - "127.0.0.1:8687:8686"
+    environment:
+      JWT_SECRET: 824C3AF52897FBED3F9932C5FC935
+      HTTP_PORT: 80
+      HTTP_THROTTLE_PORT: 7999
+      HTTP_THROTTLE_HOST: lea_throttle
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/credentials/credentials.json"
+      PGHOST: postgres
+      PGUSER: lea
+      PGPASSWORD: $POSTGRES_PASSWORD
+      PGDATABASE: lea_dev
+      BUILD_DEVICE_ESP32_ENABLE: "false"
+      BUILD_APP_ANDROID_ENABLE: "true"
+      BUILD_APP_IOS_ENABLE: "false"
+      BUILD_DEVICE_ANDROID_ENABLE: "true"
+      SENDGRID_API_KEY: $SENDGRID_API_KEY
+    volumes:
+      - /tmp/lea_api_dev:/app/tmp
+      - build_dev:/app/build
+
+  lea_api_prod:
+    depends_on:
+      - lea_throttle
+    image: leassistant/lea_api_prod:latest
+    container_name: lea_api_prod
+    build:
+      context: ../Lea-Back-Prod
+      dockerfile: ./Dockerfile.prod
+    restart: always
+    expose:
+      - 80
+    ports:
+      - "127.0.0.1:8686:8686"
+    environment:
+      JWT_SECRET: 824C3AF52897FBED3F9932C5FC935
+      HTTP_PORT: 80
+      HTTP_THROTTLE_PORT: 7999
+      HTTP_THROTTLE_HOST: lea_throttle
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/credentials/credentials.json"
+      PGHOST: postgres
+      PGUSER: lea
+      PGPASSWORD: $POSTGRES_PASSWORD
+      PGDATABASE: lea_prod
+      BUILD_DEVICE_ESP32_ENABLE: "false"
+      BUILD_APP_ANDROID_ENABLE: "true"
+      BUILD_APP_IOS_ENABLE: "false"
+      BUILD_DEVICE_ANDROID_ENABLE: "true"
+      SENDGRID_API_KEY: $SENDGRID_API_KEY
+    volumes:
+      - /tmp/lea_prod_dev:/app/tmp
+      - build_prod:/app/build
+
+  lea_app_dev:
+    image: leassistant/lea_app_dev:latest
+    container_name: lea_app_dev
+    build:
+      context: ../Lea-Web-Connect-Dev
+      dockerfile: ./Dockerfile.dev
+    expose:
+      - 5000
+
+  lea_app_prod:
+    image: leassistant/lea_app_prod:latest
+    container_name: lea_app_prod
+    build:
+      context: ../Lea-Web-Connect-Prod
+      dockerfile: ./Dockerfile.prod
+    restart: always
+    expose:
+      - 5000
+
+  lea_website:
+    image: leassistant/lea_website:latest
+    container_name: lea_website
+    build:
+      context: ../Lea-Website
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      REACT_APP_AIRTABLE_API_KEY: $REACT_APP_AIRTABLE_API_KEY
+    expose:
+      - 5000
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    expose:
+      - 8080
+    volumes:
+      - ../Lea-Doc/api.yml:/usr/share/nginx/html/api.yml
+    environment:
+      API_URL: /api.yml
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: always
+    depends_on: 
+      - lea_api_dev
+      - lea_api_prod
+      - lea_app_dev
+      - lea_app_prod
+      - swagger-ui
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/proxy_params.conf:/etc/nginx/proxy_params.conf
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./nginx/sslconf:/etc/nginx/sslconf
+      - /etc/letsencrypt:/etc/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+
+volumes:
+  postgres:
+  build_dev:
+  build_prod:
